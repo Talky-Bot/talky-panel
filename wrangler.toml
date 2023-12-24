@@ -1,0 +1,6 @@
+name = "talky-panel"
+main = "./.output/server/index.mjs"
+compatibility_date = "2023-12-24"
+
+[build]
+command = "npm run build"
