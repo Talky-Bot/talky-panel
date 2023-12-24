@@ -4,3 +4,6 @@ compatibility_date = "2023-12-24"
 
 [build]
 command = "npm run build"
+
+[site]
+bucket = ".output/public"
