@@ -1,23 +1,16 @@
 <template>
   <header>
-    <nav>
-      <ul class="page-link space-out">
-        <li>
-          <NuxtLink to="/" class="page-link white-text">
-            <b>
-              <h1>Talky</h1>
-            </b>
-          </NuxtLink>
-        </li>
-        <li>
-          <Button icon="/icons/discord.svg" text="Login with Discord" page="/login/" v-if="!loggedIn" />
-          
-          <div v-if="loggedIn" class=".space-out">
-            <p>Username</p>
-            <p>Test</p>
-          </div>
-        </li>
-      </ul>
+    <nav class="page-link space-out" width="95%">
+      <NuxtLink to="/" class="page-link white-text">
+        <b>
+          <h1>Talky</h1>
+        </b>
+      </NuxtLink>
+
+      <ClientOnly>
+        <NuxtImg :src="imgUrl" alt="User Icon" v-if="loggedIn" id="pfp"/>
+        <Button icon="/icons/discord.svg" text="Login with Discord" :page="loginUrl!" v-else />
+      </ClientOnly>
     </nav>
   </header>
 
@@ -36,11 +29,51 @@
 </template>
 
 <script lang="ts" setup>
-const loggedIn = true;
+// Get redirect url for oauth
+const { data: loginUrl } = await useFetch('/api/auth/login');
 
+// Check if the user is logged in and handle accordingly. Will either show profile pic or login button. Token will be refreshed if needed
+const loggedIn = ref(false)
+await useFetch('/api/auth/status', {
+  onResponse({ response }) {
+    if (response.status === 204) {
+      loggedIn.value = true // User is logged in
+    } else if (response.status === 302) {
+      useFetch('/api/auth/refresh', { // Refresh token
+        onResponse({ response }) {
+          if (response.status === 200) {
+            loggedIn.value = true; // User is logged in
+          } else {
+            loggedIn.value = false; // User is not logged in
+          }
+        }
+      });
+    } else {
+      loggedIn.value = false; // User is not logged in
+    }
+  }
+});
+
+console.log(loggedIn.value);
+
+// Get the url for the profile pic
+const { data: userInfo }: any = await useFetch('/api/data/session');
+const imgUrl = ref(`https://cdn.discordapp.com/avatars/${userInfo.value?.id}/${userInfo.value?.pfp}.webp`);
 </script>
 
 <style>
+header {
+  background-color: #020420D9; /* 85% transparent */
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0px;
+  padding-top: 8px;
+  backdrop-filter: blur(8px);
+}
+nav {
+  width: 98%;
+  margin: auto;
+}
 main, footer {
   max-width: -moz-fit-content;
   max-width: fit-content;
@@ -52,8 +85,19 @@ footer {
 .space-out {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
-.right-padding {
-  padding-right: 40px;
+#pfp {
+  border-radius: 50%;
+  height: 48px;
+}
+li {
+  height: min-content;
+}
+
+@media screen and (max-width: 600px) {
+  #pfp {
+    height: 36px;
+  }
 }
 </style>

@@ -4,12 +4,12 @@
     <div id="info-box">
       <h1>{{ heading }} <span class="light-blue">{{ coloredHeading }}</span></h1>
       <h2>{{ description }}</h2>
-      <slot class="buttons"></slot>
+      <slot :class="{ buttons: true, 'move-right': shouldSwitch }"></slot>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 defineProps<{
   icon?: string;
   alt?: string;
@@ -35,13 +35,17 @@ defineProps<{
     flex-direction: row-reverse;
     text-align: right;
   }
+  .move-right {
+    display: flex;
+    justify-content: flex-endC;
+  }
   .max-height {
     width: 30%;
-    max-width: 100%; /* Adjusted max-width for better responsiveness */
+    max-width: 100%;
   }
 
   /* Media Query for smaller screens */
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 600px) {
     #feature-group {
       flex-direction: column;
     }

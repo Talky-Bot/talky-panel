@@ -27,7 +27,7 @@ p {
   color: white;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 600px) {
   h1 {
     font-size: 1.5rem;
   }
