@@ -1,3 +1,7 @@
+const client_id = process.env.DISCORD_CLIENT_ID!;
+const client_secret = process.env.DISCORD_CLIENT_SECRET!;
+const redirect_uri = process.env.DISCORD_CALLBACK_URL!;
+
 export default defineEventHandler(async (event) => {
   const code = getQuery(event).code as string;
 
@@ -7,37 +11,39 @@ export default defineEventHandler(async (event) => {
   // Make sure that discord is the one sending the code to the callback
   if (getHeader(event, 'Referer') === 'https://discord.com/') {
     const params = new URLSearchParams({
-      "client_id": process.env.DISCORD_CLIENT_ID!,
-      "client_secret": process.env.DISCORD_CLIENT_SECRET!,
+      "client_id": client_id,
+      "client_secret": client_secret,
       "grant_type": "authorization_code",
       "code": code,
-      "redirect_uri": "https://localhost:3000/api/auth/callback",
+      "redirect_uri": redirect_uri,
       "scope": "guilds"
     });
     
-    const response: any = await $fetch('https://discord.com/api/oauth2/token', {
+    await $fetch('https://discord.com/api/oauth2/token', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: params.toString()
+    }).then(async (res: any) => {
+      setCookie(event, 'auth_token', res.access_token!, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        maxAge: res.expires_in,
+      });
+
+      setCookie(event, 'refresh_token', res.refresh_token!, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        maxAge: res.expires_in + 432000, // 5 days longer
+      });
+
+      await sendRedirect(event, '/');
+    }).catch((err: any) => {
+      setResponseStatus(event, 500, err);
     });
-  
-    setCookie(event, 'auth_token', response.access_token as string, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
-      expires: new Date(Date.now() + response.expires_in * 1000),
-    });
-  
-    setCookie(event, 'refresh_token', response.refresh_token as string, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
-      expires: new Date(Date.now() + response.expires_in * 1000 + 432000000),
-    })
-  
-    await sendRedirect(event, '/');
   } else {
     setResponseStatus(event, 401);
   }
