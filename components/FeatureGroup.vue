@@ -37,7 +37,7 @@ defineProps<{
   }
   .move-right {
     display: flex;
-    justify-content: flex-endC;
+    justify-content: flex-end;
   }
   .max-height {
     width: 30%;

@@ -24,14 +24,14 @@ export default defineEventHandler(async (event) => {
         httpOnly: true,
         secure: true,
         sameSite: 'strict',
-        expires: new Date(Date.now() + res.expires_in * 1000),
+        maxAge: res.expires_in,
       });
   
       setCookie(event, 'refresh_token', res.refresh_token!, {
         httpOnly: true,
         secure: true,
         sameSite: 'strict',
-        expires: new Date(Date.now() + res.expires_in * 1000 + 432000000),
+        maxAge: res.expires_in,
       });
     }).catch((err) => {
       if (err.status === 400) {

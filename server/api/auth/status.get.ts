@@ -6,11 +6,10 @@ export default defineEventHandler(async (event) => {
   setHeader(event, 'Cache-Control', `no-cache`);
 
   if (token && refresh) {
-    setResponseStatus(event, 204); // Indicates they are authenticated, send 204 cause no content is being sent
+    return 0x0; // Indicates they are authenticated
   } else if (!token && refresh) {
-    await $fetch('/api/auth/refresh');
-    sendRedirect(event, '/api/auth/refresh');  // Token has expired, try to refresh
+    return 0x1; // Token has expired
   } else {
-    setResponseStatus(event, 401, "login"); // Indicates they are not authenticated, client will try to login
+    return 0x2; // Indicates they are not authenticated
   }
 })

@@ -22,7 +22,7 @@ defineProps<{
     align-items: center;
     gap: 8px;
     padding: 8px 12px;
-    background-color: white ;
+    background-color: #B388EB;
     color: black;
     max-width: fit-content;
     max-height: fit-content;

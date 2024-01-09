@@ -10,14 +10,14 @@ export default defineEventHandler(async (event) => {
       'Authorization': `Bearer ${token}`
     },
   }).then((res: any) => {
-    console.log(res)
     const { user } = res
-    console.log(user)
     data = {
       id: user.id,
       username: user.username,
       pfp: user.avatar
     }
+
+    setHeader(event, 'Cache-Control', `max-age=30`); // Cache the data since it's not very likely to change
   }).catch((err: any) => {
     setResponseStatus(event, 401);
   });

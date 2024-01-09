@@ -14,7 +14,8 @@ export default defineNuxtConfig({
   },
 
   typescript: {
-    shim: false
+    shim: false,
+    strict: true,
   },
 
   css: ['~/assets/main.css'],
@@ -32,6 +33,16 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
-    // '/api/*': { cors: true },
+    '/': { prerender: true },
+    '/api/**': { cors: true },
+    '/login/**': { ssr: false, prerender: true }, // Disable ssr for login so that the state parameter can be generated and verified on the client
+  },
+
+  runtimeConfig: {
+    DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET!,
+    public: {
+      DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID!,
+      DISCORD_CALLBACK_URL: process.env.DISCORD_CALLBACK_URL!,
+    }
   }
 })
