@@ -1,20 +1,16 @@
-const client_id = process.env.DISCORD_CLIENT_ID!;
-const client_secret = process.env.DISCORD_CLIENT_SECRET!;
-const redirect_uri = process.env.DISCORD_CALLBACK_URL!;
-
 export default defineEventHandler(async (event) => {
   const code = getQuery(event).code as string;
+  const config = useRuntimeConfig();
 
   // Disable caching for auth
   setHeader(event, 'Cache-Control', `no-cache`);
 
   const params = new URLSearchParams({
-    "client_id": client_id,
-    "client_secret": client_secret,
+    "client_id": config.public.discordClientId as string,
+    "client_secret": config.discordClientSecret as string,
     "grant_type": "authorization_code",
     "code": code,
-    "redirect_uri": redirect_uri,
-    "scope": "guilds"
+    "redirect_uri": config.public.discordCallbackUrl as string,
   });
   
   await $fetch('https://discord.com/api/oauth2/token', {
@@ -40,6 +36,6 @@ export default defineEventHandler(async (event) => {
 
     await sendRedirect(event, '/');
   }).catch((err: any) => {
-    setResponseStatus(event, 500, err);
+    setResponseStatus(event, 500, err.message);
   });
 })

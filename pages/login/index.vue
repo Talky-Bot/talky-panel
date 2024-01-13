@@ -16,8 +16,8 @@ cookie.value = uuid;
 
 action.value = 'Sending you to Discord';
 await navigateTo("https://discord.com/api/oauth2/authorize?" + new URLSearchParams({
-  client_id: useRuntimeConfig().public.DISCORD_CLIENT_ID,
-  redirect_uri: useRuntimeConfig().public.DISCORD_CALLBACK_URL,
+  client_id: useRuntimeConfig().public.discordClientId as string,
+  redirect_uri: useRuntimeConfig().public.discordCallbackUrl as string,
   state: uuid,
   response_type: "code",
   scope: "identify guilds",

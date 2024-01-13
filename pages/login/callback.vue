@@ -31,7 +31,7 @@ if (storedStateHash === undefined) {
     data.loggedIn = true;
     await data.updateInfo();
 
-    await navigateTo('/');
+    await navigateTo('/servers');
   }).catch(async () => {
     action.value = 'Login error, redirecting to try again';
     await navigateTo('/login');
