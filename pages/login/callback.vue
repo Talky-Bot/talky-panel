@@ -31,10 +31,11 @@ if (storedStateHash === undefined) {
     data.loggedIn = true;
     await data.updateInfo();
 
-    await navigateTo('/servers');
-  }).catch(async () => {
+    await navigateTo('/');
+  }).catch(async (err) => {
+    console.log(err);
     action.value = 'Login error, redirecting to try again';
-    await navigateTo('/login');
+    // await navigateTo('/login');
   });
 } else {
   action.value = 'Login blocked, redirecting to try again';

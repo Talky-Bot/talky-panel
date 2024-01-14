@@ -1,17 +1,20 @@
 export default defineEventHandler(async (event) => {
-  const code = getQuery(event).code as string;
-  const config = useRuntimeConfig();
+  const code = getQuery(event).code as string
 
   // Disable caching for auth
   setHeader(event, 'Cache-Control', `no-cache`);
 
+  const config = useRuntimeConfig();
   const params = new URLSearchParams({
-    "client_id": config.public.discordClientId as string,
-    "client_secret": config.discordClientSecret as string,
+    "client_id": useRuntimeConfig(event).public.discordClientId,
+    "client_secret": useRuntimeConfig(event).discordClientSecret,
     "grant_type": "authorization_code",
     "code": code,
-    "redirect_uri": config.public.discordCallbackUrl as string,
+    "redirect_uri": useRuntimeConfig(event).public.discordCallbackUrl,
   });
+
+  console.log(params.toString());
+  console.log('Test:', useRuntimeConfig(event).public.discordClientId);
   
   await $fetch('https://discord.com/api/oauth2/token', {
     method: 'POST',
@@ -36,6 +39,7 @@ export default defineEventHandler(async (event) => {
 
     await sendRedirect(event, '/');
   }).catch((err: any) => {
+    console.log(err);
     setResponseStatus(event, 500, err.message);
   });
 })

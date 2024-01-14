@@ -39,10 +39,10 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: { // Values will be overriden by environment variables
-    discordClientSecret: '',
+    discordClientSecret: undefined,
     public: {
-      discordClientId: '',
-      discordCallbackUrl: '',
+      discordClientId: undefined,
+      discordCallbackUrl: undefined,
     }
   }
 })
